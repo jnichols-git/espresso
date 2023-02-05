@@ -28,7 +28,7 @@ func Create(l *Listing, client *dynamodb.Client) (err error) {
 		Item:      item,
 	})
 	if err != nil {
-		fmt.Printf("Failed to create listing: %s\n", err)
+		fmt.Printf("Failed to create listing: %s\n", err.Error())
 		return err
 	}
 	fmt.Printf("Successfully created listing\n")
@@ -43,13 +43,13 @@ func ReadOne(key string, client *dynamodb.Client) (l *Listing, err error) {
 		Statement: aws.String(statement),
 	})
 	if err != nil {
-		fmt.Printf("Failed to read listing %s: %s\n", key, err)
+		fmt.Printf("Failed to read listing %s: %s\n", key, err.Error())
 		return nil, err
 	}
 	l = &Listing{}
 	err = attributevalue.UnmarshalMap(res.Items[0], l)
 	if err != nil {
-		fmt.Printf("Failed to read listing %s: %s\n", key, err)
+		fmt.Printf("Failed to read listing %s: %s\n", key, err.Error())
 		return nil, err
 	}
 	return l, nil
@@ -63,13 +63,13 @@ func ReadMany(pc, pn int, filter func(*Listing) bool, client *dynamodb.Client) (
 	}
 	res, err := client.Scan(context.TODO(), qin)
 	if err != nil {
-		fmt.Printf("Failed to read listings: %s\n", err)
+		fmt.Printf("Failed to read listings: %s\n", err.Error())
 		return nil, err
 	}
 	ls = make([]*Listing, 0)
 	err = attributevalue.UnmarshalListOfMaps(res.Items, &ls)
 	if err != nil {
-		fmt.Printf("Failed to read listings: %s\n", err)
+		fmt.Printf("Failed to read listings: %s\n", err.Error())
 		return nil, err
 	}
 	slices.SortFunc(ls, func(a, b *Listing) bool {
