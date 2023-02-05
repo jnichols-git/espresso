@@ -12,7 +12,7 @@ import (
 
 func main() {
 	r := mux.NewRouter()
-	r.Use()
+	r.Use(handlers.HandleHostAuth)
 	r.HandleFunc("/blog/host/create", handlers.HandleCreateRequest)
 	r.HandleFunc("/blog/host/update", handlers.HandleUpdateRequest)
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {

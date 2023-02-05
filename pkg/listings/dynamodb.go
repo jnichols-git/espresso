@@ -73,6 +73,9 @@ func ReadMany(pc, pn int, filter func(*Listing) bool, client *dynamodb.Client) (
 		}
 	}
 	s := pc * pn
+	if s > len(filtered) {
+		return []*Listing{}, nil
+	}
 	e := pc * (pn + 1)
 	if e > len(filtered) {
 		e = len(filtered)

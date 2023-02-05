@@ -46,6 +46,10 @@ func HandleGetListings(w http.ResponseWriter, req *http.Request) {
 	if ok != nil {
 		HandleError(w, ok)
 	}
+	pn, ok := strconv.Atoi(params.Get("page_number"))
+	if ok != nil {
+		pn = 0
+	}
 	// compile filter
 	// tag match (optional)
 	tags := params["tags"]
@@ -70,7 +74,7 @@ func HandleGetListings(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	// Read listings
-	ls, err := listings.ReadMany(pc, 0, filter, listings.Connect(cfg))
+	ls, err := listings.ReadMany(pc, pn, filter, listings.Connect(cfg))
 	if err != nil {
 		HandleError(w, err)
 	}
