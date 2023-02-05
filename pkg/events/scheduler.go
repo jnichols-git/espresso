@@ -29,6 +29,7 @@ func Connect(cfg aws.Config) *Client {
 }
 
 func Schedule(e *Event, client *Client) (err error) {
+	fmt.Printf("Scheduling event\n")
 	raw, err := json.Marshal(e)
 	if err != nil {
 		return err
@@ -66,13 +67,16 @@ func Schedule(e *Event, client *Client) (err error) {
 		_, err = client.s.CreateSchedule(context.TODO(), input)
 	} else {
 		detail := string(raw)
+		src := os.Getenv("EVENT_NAME")
+		bus := os.Getenv("EVENT_BUS")
+		fmt.Printf("Putting event with source %s to bus %s\n", src, bus)
 		input := &eventbridge.PutEventsInput{
 			Entries: []etypes.PutEventsRequestEntry{
 				{
-					Source:       aws.String(os.Getenv("EVENT_NAME")),
+					Source:       aws.String(src),
 					DetailType:   aws.String("event"),
 					Detail:       aws.String(detail),
-					EventBusName: aws.String("EVENT_BUS"),
+					EventBusName: aws.String(bus),
 				},
 			},
 			EndpointId: aws.String("t831eg9jtu.veo"),

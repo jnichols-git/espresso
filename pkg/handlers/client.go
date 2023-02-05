@@ -30,11 +30,13 @@ func HandleGetListing(w http.ResponseWriter, req *http.Request) {
 	l, err := listings.ReadOne(pID, listings.Connect(cfg))
 	if err != nil {
 		HandleError(w, err)
+		return
 	}
 	// Write out
 	raw, err := json.Marshal(l)
 	if err != nil {
 		HandleError(w, err)
+		return
 	}
 	w.Write(raw)
 }
@@ -45,6 +47,7 @@ func HandleGetListings(w http.ResponseWriter, req *http.Request) {
 	pc, ok := strconv.Atoi(params.Get("page_count"))
 	if ok != nil {
 		HandleError(w, ok)
+		return
 	}
 	pn, ok := strconv.Atoi(params.Get("page_number"))
 	if ok != nil {
@@ -77,11 +80,13 @@ func HandleGetListings(w http.ResponseWriter, req *http.Request) {
 	ls, err := listings.ReadMany(pc, pn, filter, listings.Connect(cfg))
 	if err != nil {
 		HandleError(w, err)
+		return
 	}
 	// Write out
 	raw, err := json.Marshal(ls)
 	if err != nil {
 		HandleError(w, err)
+		return
 	}
 	w.Write(raw)
 }
@@ -110,6 +115,7 @@ func HandleGetPost(w http.ResponseWriter, req *http.Request) {
 		l, err := listings.ReadOne(pID, listings.Connect(cfg))
 		if err != nil {
 			HandleError(w, err)
+			return
 		}
 		vID = l.LiveVersionID
 	}

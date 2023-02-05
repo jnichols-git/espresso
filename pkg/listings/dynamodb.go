@@ -18,6 +18,7 @@ func Connect(cfg aws.Config) *dynamodb.Client {
 
 // Create a listing in the blog table.
 func Create(l *Listing, client *dynamodb.Client) (err error) {
+	fmt.Printf("Creating listing\n")
 	item, err := l.MarshalDynamoDBAV()
 	if err != nil {
 		return err
@@ -27,23 +28,28 @@ func Create(l *Listing, client *dynamodb.Client) (err error) {
 		Item:      item,
 	})
 	if err != nil {
+		fmt.Printf("Failed to create listing: %s\n", err)
 		return err
 	}
+	fmt.Printf("Successfully created listing\n")
 	return nil
 }
 
 // Read a listing with the given key.
 func ReadOne(key string, client *dynamodb.Client) (l *Listing, err error) {
+	fmt.Printf("Reading listing with key %s\n", key)
 	statement := fmt.Sprintf(`SELECT * FROM "%s" WHERE "%s" = '%s'`, os.Getenv("DB_TABLE"), partitionKey, key)
 	res, err := client.ExecuteStatement(context.TODO(), &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(statement),
 	})
 	if err != nil {
+		fmt.Printf("Failed to read listing %s: %s\n", key, err)
 		return nil, err
 	}
 	l = &Listing{}
 	err = attributevalue.UnmarshalMap(res.Items[0], l)
 	if err != nil {
+		fmt.Printf("Failed to read listing %s: %s\n", key, err)
 		return nil, err
 	}
 	return l, nil
@@ -51,16 +57,19 @@ func ReadOne(key string, client *dynamodb.Client) (l *Listing, err error) {
 
 // Read up to pc listings, ordered by UploadTimestamp, starting at the last listing
 func ReadMany(pc, pn int, filter func(*Listing) bool, client *dynamodb.Client) (ls []*Listing, err error) {
+	fmt.Printf("Reading listings %d->%d", pc*pn, pc*(pn+1))
 	qin := &dynamodb.ScanInput{
 		TableName: aws.String(os.Getenv("DB_TABLE")),
 	}
 	res, err := client.Scan(context.TODO(), qin)
 	if err != nil {
+		fmt.Printf("Failed to read listings: %s\n", err)
 		return nil, err
 	}
 	ls = make([]*Listing, 0)
 	err = attributevalue.UnmarshalListOfMaps(res.Items, &ls)
 	if err != nil {
+		fmt.Printf("Failed to read listings: %s\n", err)
 		return nil, err
 	}
 	slices.SortFunc(ls, func(a, b *Listing) bool {
@@ -72,6 +81,7 @@ func ReadMany(pc, pn int, filter func(*Listing) bool, client *dynamodb.Client) (
 			filtered = append(filtered, listing)
 		}
 	}
+	fmt.Printf("Successfully read listings\n")
 	s := pc * pn
 	if s > len(filtered) {
 		return []*Listing{}, nil
@@ -85,6 +95,7 @@ func ReadMany(pc, pn int, filter func(*Listing) bool, client *dynamodb.Client) (
 
 // Update a listing in the blog table.
 func Update(l *Listing, client *dynamodb.Client) (err error) {
+	fmt.Printf("Updating listing\n")
 	item, err := l.MarshalDynamoDBAV()
 	if err != nil {
 		return err
