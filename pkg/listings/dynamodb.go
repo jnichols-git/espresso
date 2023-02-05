@@ -23,7 +23,7 @@ func Create(l *Listing, client *dynamodb.Client) (err error) {
 		return err
 	}
 	_, err = client.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		TableName: aws.String("jnd-blog-listings"),
+		TableName: aws.String(os.Getenv("DB_TABLE")),
 		Item:      item,
 	})
 	if err != nil {
@@ -34,7 +34,7 @@ func Create(l *Listing, client *dynamodb.Client) (err error) {
 
 // Read a listing with the given key.
 func ReadOne(key string, client *dynamodb.Client) (l *Listing, err error) {
-	statement := fmt.Sprintf(`SELECT * FROM "%s" WHERE "%s" = '%s'`, "jnd-blog-listings", partitionKey, key)
+	statement := fmt.Sprintf(`SELECT * FROM "%s" WHERE "%s" = '%s'`, os.Getenv("DB_TABLE"), partitionKey, key)
 	res, err := client.ExecuteStatement(context.TODO(), &dynamodb.ExecuteStatementInput{
 		Statement: aws.String(statement),
 	})
