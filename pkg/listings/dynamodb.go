@@ -73,7 +73,7 @@ func ReadMany(pc, pn int, filter func(*Listing) bool, client *dynamodb.Client) (
 		return nil, err
 	}
 	slices.SortFunc(ls, func(a, b *Listing) bool {
-		return a.UploadTimestamp > b.UpdateTimestamp
+		return a.UploadTimestamp > b.UploadTimestamp
 	})
 	filtered := make([]*Listing, 0)
 	for _, listing := range ls {
