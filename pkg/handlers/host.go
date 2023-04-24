@@ -14,24 +14,22 @@ import (
 )
 
 // Kick host requests back without a hardcoded API key
-func HandleHostAuth(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("Authenticating request\n")
-		req := os.Getenv("HOST_API_KEY")
-		if req == "" {
-			HandleError(w, errors.New("missing HOST_API_KEY env"))
-			return
-		} else {
-			req = "Bearer " + req
-		}
-		auth := r.Header.Get("Authorization")
-		if auth != req {
-			HandleError(w, errors.New("incorrect authorization key"))
-			return
-		}
-		fmt.Printf("Request authenticated, forwarding to handler\n")
-		next.ServeHTTP(w, r)
-	})
+func HandleHostAuth(w http.ResponseWriter, r *http.Request) *http.Request {
+	fmt.Printf("Authenticating request\n")
+	req := os.Getenv("HOST_API_KEY")
+	if req == "" {
+		HandleError(w, errors.New("missing HOST_API_KEY env"))
+		return nil
+	} else {
+		req = "Bearer " + req
+	}
+	auth := r.Header.Get("Authorization")
+	if auth != req {
+		HandleError(w, errors.New("incorrect authorization key"))
+		return nil
+	}
+	fmt.Printf("Request authenticated, forwarding to handler\n")
+	return r
 }
 
 func HandleCreateRequest(w http.ResponseWriter, req *http.Request) {
