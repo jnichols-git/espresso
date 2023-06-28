@@ -12,9 +12,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/eventbridge v1.16.22
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.29.6
 	github.com/aws/aws-sdk-go-v2/service/scheduler v1.1.0
-	github.com/awslabs/aws-lambda-go-api-proxy v0.13.3
+	github.com/cloudretic/matcha v1.1.0
 	github.com/google/uuid v1.3.0
-	github.com/gorilla/mux v1.8.0
 	golang.org/x/exp v0.0.0-20230105202349-8879d0199aa3
 )
 
@@ -36,6 +35,5 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.13.11 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.17.7 // indirect
 	github.com/aws/smithy-go v1.13.5 // indirect
-	github.com/cloudretic/matcha v1.1.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 )
