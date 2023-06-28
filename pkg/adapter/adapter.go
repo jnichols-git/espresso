@@ -2,6 +2,7 @@ package adapter
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"net/http"
@@ -61,7 +62,11 @@ func (mv2a *MatchaV2Adapter) Adapt(pr events.APIGatewayV2HTTPRequest) (http.Resp
 	req.Method = pr.RequestContext.HTTP.Method
 	// Body
 	if len(pr.Body) > 0 {
-		req.Body = io.NopCloser(strings.NewReader(pr.Body))
+		r := io.Reader(strings.NewReader(pr.Body))
+		if pr.IsBase64Encoded {
+			r = base64.NewDecoder(base64.StdEncoding, r)
+		}
+		req.Body = io.NopCloser(r)
 		req.ContentLength = int64(len(pr.Body))
 	}
 	// URL values
